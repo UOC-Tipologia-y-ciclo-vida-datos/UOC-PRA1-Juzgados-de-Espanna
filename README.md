@@ -71,14 +71,17 @@ Este proyecto se ha desarrollado siguiendo estrictos principios éticos y legale
 
 1. Clonar el repositorio:
 ```bash
-git clone https://github.com/pedroj0s/UOC-PRA1-Juzgados-de-Espa-a.git
-cd UOC-PRA1-Juzgados-de-Espa-a
+git clone https://github.com/UOC-Tipologia-y-ciclo-vida-datos/UOC-PRA1-Juzgados-de-Espanna.git
+cd UOC-PRA1-Juzgados-de-Espanna
 ```
 
 2. Crear un entorno virtual (recomendado):
 ```bash
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+python -m venv uoc-pra1-tipologia-y-ciclo-de-vida-datos
+#Con Linux:
+#source uoc-pra1-tipologia-y-ciclo-de-vida-datos/bin/activate  
+#Con Windows: 
+source uoc-pra1-tipologia-y-ciclo-de-vida-datos\Scripts\activate
 ```
 
 3. Instalar las dependencias:
@@ -95,9 +98,11 @@ python src/scraper.py
 
 El script realizará las siguientes acciones:
 1. Conectará con el sitio web del CGPJ
-2. Extraerá los datos de los juzgados de Madrid
-3. Procesará y limpiará la información
-4. Generará los archivos CSV y JSON en la carpeta `data/`
+2. Extraerá los datos de las provincias de España donde hay juzgados [https://www.poderjudicial.es/cgpj/es/Servicios/Directorio/Directorio_de_Organos_Judiciales]
+3. Por cada provincia, enumerará la lista de juzgados registrados.
+4. Para cada juzgado, extraerá sus datos.
+5. Procesará y limpiará la información
+6. Generará los archivos CSV y JSON en la carpeta `data/`
 
 ## Estructura del Dataset
 
