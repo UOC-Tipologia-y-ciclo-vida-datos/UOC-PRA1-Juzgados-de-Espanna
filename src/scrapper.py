@@ -164,7 +164,8 @@ def ObtenerDetalleJuzgados(juzgado: dict)-> dict:
   if googleLink:
     grupos = re.search(r'[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)', googleLink)
     if grupos and len(grupos.groups())==2:
-      juzgado['latitud'], juzgado['longitud'] = map(float,grupos.groups())
+      juzgado['latitud'] = float(grupos.groups()[0])
+      juzgado['longitud'] = float(grupos.groups()[1])
   juzgado['detallesObtenidos'] = True
   return juzgado
 
