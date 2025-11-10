@@ -31,11 +31,11 @@ Los datos se extraen del **Directorio de Órganos Judiciales** del Consejo Gener
 📦 UOC-PRA1-Juzgados-de-España
 ├── 📄 README.md                    # Este archivo
 ├── 📄 .gitignore                   # Archivos ignorados por Git
-├── 📂 src/                         # Código fuente del proyecto
+├── 📂 source/                         # Código fuente del proyecto
 │   └── 📄 scraper.py              # Script de extracción de datos
-├── 📂 data/                        # Datasets generados
-│   ├── 📄 juzgados_españoles.csv  # Dataset principal
-│   └── 📄 juzgados_españoles.json # Dataset en formato JSON
+├── 📂 dataset/                        # Datasets generados
+│   ├── 📄 jueces-y-juzgados-espanna.csv # Dataset principal -aplanado-
+│   └── 📄 juzgados_españoles.json # Dataset en formato JSON -con jerarquía-
 ├── 📂 docs/                        # Documentación del proyecto
 │   └── 📄 memoria.pdf             # Memoria del proyecto
 └── 📄 requirements.txt             # Dependencias de Python
@@ -75,16 +75,7 @@ git clone https://github.com/UOC-Tipologia-y-ciclo-vida-datos/UOC-PRA1-Juzgados-
 cd UOC-PRA1-Juzgados-de-Espanna
 ```
 
-2. Crear un entorno virtual (recomendado):
-```bash
-python -m venv uoc-pra1-tipologia-y-ciclo-de-vida-datos
-#Con Linux:
-#source uoc-pra1-tipologia-y-ciclo-de-vida-datos/bin/activate  
-#Con Windows: 
-source uoc-pra1-tipologia-y-ciclo-de-vida-datos\Scripts\activate
-```
-
-3. Instalar las dependencias:
+2. Instalar las dependencias:
 ```bash
 pip install -r requirements.txt
 ```
@@ -93,7 +84,7 @@ pip install -r requirements.txt
 
 ### Ejecutar el script de extracción:
 ```bash
-python src/scraper.py
+python source/scraper.py
 ```
 
 El script realizará las siguientes acciones:
@@ -127,8 +118,7 @@ Este proyecto se desarrolla como parte de la **Práctica 1 (PRA1)** de la asigna
 
 - **Python 3**: Lenguaje de programación principal
 - **BeautifulSoup4**: Librería para parsing de HTML
-- **Requests**: Librería para realizar peticiones HTTP
-- **Pandas**: Manipulación y análisis de datos
+- **Selenium**: Librería para automatizar un navegador web, en nuestro caso Chrome.
 - **JSON/CSV**: Formatos de salida del dataset
 
 ## Limitaciones y Consideraciones
@@ -138,17 +128,13 @@ Este proyecto se desarrolla como parte de la **Práctica 1 (PRA1)** de la asigna
 - Los datos reflejan la información disponible en el momento de la extracción
 - Se recomienda verificar la información directamente con el CGPJ para usos oficiales
 
-## Contribuciones
-
-Este proyecto es de carácter educativo. Las sugerencias y mejoras son bienvenidas a través de issues y pull requests.
-
 ## Licencia
 
-Este proyecto se distribuye bajo una licencia educativa. Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
+Este proyecto se distribuye bajo licencia Creative Commons Attribution Non Commercial Share Alike 4.0 International. Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
 
 ## Autores
 
-Proyecto desarrollado como parte del Máster en Ciencia de Datos de la UOC por los alumnos Angel Barrón Almendros y Pedro José Berberana Martín.
+Proyecto desarrollado como parte del Máster en Ciencia de Datos de la UOC por los alumnos **Angel Barrón Almendros y Pedro José Berberana Martín**.
 
 ## Agradecimientos
 

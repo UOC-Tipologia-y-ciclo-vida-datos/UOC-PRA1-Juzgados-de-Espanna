@@ -1,20 +1,18 @@
 """
-Pequeño scrapper para extraer los enlaces de las provincias desde
-la página del Directorio de Órganos Judiciales del Consejo General del
+Scrapper para extraer los enlaces de los datos de jueces y juzgados Españoles desde
+la página Web del Directorio de Órganos Judiciales del Consejo General del
 Poder Judicial.
 
 Uso:
-	python src/scrapper.py
-	python src/scrapper.py https://www.poderjudicial.es/cgpj/es/Servicios/Directorio/Directorio_de_Organos_Judiciales
+	python src/scrapper.py	
 
-El script intenta usar requests + BeautifulSoup si están instalados.
-Si no, cae a urllib y una extracción por expresiones regulares.
+Aviso: 
+  Se requiere que el directorio '../dataset' exista para poder almacenar los resultados finales
+  del scrapping y evitar que salten errores
 """
 
 from __future__ import annotations
-import requests
 from bs4 import BeautifulSoup
-import sys
 from typing import List, Dict
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -22,6 +20,7 @@ import time
 import os
 import json
 import re
+import csv
 
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
 options = Options()
@@ -29,11 +28,11 @@ options.add_argument(f'user-agent={user_agent}')
 options.add_argument("--start-maximized")
 options.add_argument("--disable-blink-features=AutomationControlled") # Oculta "soy un bot"
 rutaActual = os.path.dirname(os.path.abspath(__file__))
-RUTADATOS = os.path.join(rutaActual,'../data')
+RUTADATOS = os.path.join(rutaActual,'../dataset')
 rutas = {
   'ficheroProvincias': os.path.abspath(f'{RUTADATOS}/provincias.json'),
   'ficheroJuzgados': os.path.abspath(f'{RUTADATOS}/juzgados.json'),
-  'fjcheroFinal': os.path.abspath(f'{RUTADATOS}/jueces-y-juzgados-espanna.csv')
+  'ficheroFinal': os.path.abspath(f'{RUTADATOS}/jueces-y-juzgados-espanna.csv')
 }
 provinciaClass = {
   'nombre': '',
@@ -61,9 +60,9 @@ CGPJ_ROOTURL = 'https://www.poderjudicial.es'
 SLEEP_TIME = 0.5  # Segundos de espera entre llamadas al navegador
 CGPJ_URLS = {
 	'provincias': f'{CGPJ_ROOTURL}/cgpj/es/Servicios/Directorio/Directorio_de_Organos_Judiciales',
-  'juzgados': ''
 }
-MI_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+#MI_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+MI_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 PRA1-UOC-Tipologia-y-Ciclo-Vida-Datos"
 CABECERAS = {
     'User-Agent': MI_USER_AGENT,
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -74,7 +73,7 @@ CABECERAS = {
     'DNT': '1', # (Do Not Track)
 }
 
-def ListarProvincias():
+def ListarProvincias()-> list:
   """
   Extrae y devuelve una lista de provincias y sus URLs desde la página del
   Directorio de Órganos Judiciales del CGPJ.
@@ -93,7 +92,7 @@ def ListarProvincias():
     result.append(provincia)
   return result  
 
-def ListarJuzgadosProvincia(provincia):
+def ListarJuzgadosProvincia(provincia: dict)->list:
   """
   Extrae todos los juzgados de la provincia a partir de la URL proporcionada
   """
@@ -169,17 +168,20 @@ def ObtenerDetalleJuzgados(juzgado: dict)-> dict:
   juzgado['detallesObtenidos'] = True
   return juzgado
 
+def AplanarJson(provincias: dict)-> dict:  
+  juzgados = [juzgado for provincia in provincias for juzgado in provincia.get('juzgados',[])]
+  aplanado = [{
+      **{k: v for k, v in j.items() if k!='jueces'}, 'juez': juez
+    }
+    for j in juzgados
+    for juez in j.get('jueces') or  [None]
+  ]
+  return aplanado
+
 provincias = None
 juzgados = None
-os.path.abspath(rutas['ficheroProvincias'])
 if(os.path.isfile(rutas['ficheroJuzgados'])):
   with open(rutas['ficheroJuzgados'], 'r', encoding='utf-8') as jsonFile:
-    try:
-      provincias = json.load(jsonFile)
-    except:
-      provincias = None
-elif(os.path.isfile(rutas['ficheroProvincias'])):
-  with open(rutas['ficheroProvincias'], 'r', encoding='utf-8') as jsonFile:
     try:
       provincias = json.load(jsonFile)
     except:
@@ -188,9 +190,7 @@ elif(os.path.isfile(rutas['ficheroProvincias'])):
 with webdriver.Chrome(options=options) as driver:  
   if provincias is None or len(provincias)<=0:
     provincias =ListarProvincias()  
-    with open(rutas['ficheroProvincias'], 'w', encoding='utf-8') as jsonFile:
-      json.dump(provincias, jsonFile, indent=2)  
-  iterador = provincias.copy() # Evitamos que nos falle al ir guardando los resultados según capturemos los resultados
+  iterador = provincias.copy() # Evitamos que nos falle al ir guardando los resultados según los vamos capturando
   for provincia in iterador:
     if not provincia['numeroJuzgados'] is None and provincia['numeroJuzgados']>0: # Si ya hemos capturado los datos, seguimos con la siguiente provincia
       continue
@@ -207,7 +207,15 @@ with webdriver.Chrome(options=options) as driver:
       if(not juzgado['detallesObtenidos']):
         ObtenerDetalleJuzgados(juzgado)
       procesados += 1      
-      print(f'Queda obtener el detalle de [{totalJuzgados-procesados} ({100 - (100*procesados/totalJuzgados)} %) ] juzgados')
+      print(f'Queda obtener el detalle de [{totalJuzgados-procesados} ({100 - (100*procesados/totalJuzgados)} %)] juzgados')
+
+if(not provincias is None):
   with open(rutas['ficheroJuzgados'], 'w', encoding='utf-8') as jsonFile:
-      json.dump(provincias, jsonFile, indent=2)
+    json.dump(provincias, jsonFile, indent=2)
+  with open(rutas['ficheroFinal'], 'w', encoding='utf-8') as csvFile:
+    aplanado = AplanarJson(provincias)
+    writer = csv.DictWriter(csvFile, fieldnames=aplanado[0].keys(), delimiter=';', lineterminator='\n')
+    writer.writeheader()
+    writer.writerows(aplanado)
+print('Proceso de captura finalizado correctamente')
 
