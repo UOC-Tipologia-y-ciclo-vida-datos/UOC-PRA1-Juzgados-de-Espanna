@@ -144,7 +144,8 @@ Este proyecto es de carácter educativo. Las sugerencias y mejoras son bienvenid
 
 ## Licencia
 
-Este proyecto se distribuye bajo una licencia educativa. Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
+Este proyecto se distribuye bajo una licencia CC BY-NC-SA 4.0 (Creative Commons Attribution‑NonCommercial‑ShareAlike 4.0 International). 
+Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
 
 ## Autores
 
