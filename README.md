@@ -130,7 +130,8 @@ Este proyecto se desarrolla como parte de la **Práctica 1 (PRA1)** de la asigna
 
 ## Licencia
 
-Este proyecto se distribuye bajo licencia Creative Commons Attribution Non Commercial Share Alike 4.0 International. Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
+Este proyecto se distribuye bajo una licencia CC BY-NC-SA 4.0 (Creative Commons Attribution‑NonCommercial‑ShareAlike 4.0 International). 
+Los datos extraídos son propiedad del CGPJ y se utilizan únicamente con fines académicos y de investigación.
 
 ## Autores
 
